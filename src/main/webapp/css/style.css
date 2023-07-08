@@ -1,0 +1,29 @@
+/* Banner */
+#banner {
+    background-color: #000;
+    color: #fff;
+    padding: 3% 0 5%;
+    text-align: center;
+}
+
+#banner p {
+    margin-top: 16px;
+    color: rgb(114, 132, 143);
+}
+
+/* Content */
+#content {
+    margin-top: 10%;
+}
+
+.row {
+    margin: 0 3% 0;
+}
+
+/* Footer */
+#footer{
+    background-color: #000;
+    text-align: center;
+    padding: 7% 15%;
+    color: #fff;
+}
