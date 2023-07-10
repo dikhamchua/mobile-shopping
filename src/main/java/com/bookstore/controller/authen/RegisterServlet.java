@@ -11,10 +11,11 @@ import com.bookstore.constant.CommonConst;
 import com.bookstore.entity.Account;
 import com.bookstore.entity.EmailLog;
 import com.bookstore.entity.VerifyRequest;
-import com.bookstore.utils.TrippleDesEncDec;
 import com.bookstore.utils.CommonUtils;
 import com.bookstore.utils.EmailUtils;
+import com.bookstore.utils.TrippleDesASCUtils;
 import java.io.IOException;
+import java.io.PrintWriter;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -35,15 +36,16 @@ public class RegisterServlet extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        
         AccountLogic accountLogic = new AccountLogic();
         EmailLogLogic emailLogLogic = new EmailLogLogic();
         VerifyRequestLogic verifyRequestLogic = new VerifyRequestLogic();
-
+        
+        //get information from form
         String username = request.getParameter("username");
         String password = request.getParameter("password");
         String email = request.getParameter("email");
 
+        //create instance account
         Account account = Account.builder().
                 username(username).
                 password(password).
@@ -51,51 +53,61 @@ public class RegisterServlet extends HttpServlet {
                 isVerify(false).
                 roleId(CommonConst.ROLE_USER).
                 build();
-
         try {
-            int accountId = accountLogic.insertToDb(account);
-            //if id = -1 => insert not success
-            if (accountId == CommonConst.ID_INSERT_FAIL) {
-                throw new IllegalArgumentException("Some thing went wrong !!");
-            }
-            
-            //encrypt token, accountId
-            String accountIdEncrypt = TrippleDesEncDec.encrypt(accountId + "");
-            String tokenEncrypt = TrippleDesEncDec.encrypt(CommonUtils.uniqueToken());
+            int id = accountLogic.insertToDb(account);
+            //generate token
+            String token = TrippleDesASCUtils.encrypt(CommonUtils.generateRandomUUID());
 
-            String URLWeb = "http://" + request.getServerName() + ":"
-                    + request.getServerPort()
-                    + request.getContextPath();
-            //send mail 
-            boolean isSendMailSuccess = emailLogLogic.sendMail(account,
-                    CommonConst.TYPE_SEND_MAIL_VERIFY_REGISTER,
-                    EmailUtils.getMailContentRegister(tokenEncrypt, URLWeb, accountIdEncrypt));
+            //get link
+            String link = request.getScheme() + "://" + request.getServerName() + ":"
+                    + request.getServerPort() + request.getContextPath() + "/verify?token=" + token;
+
+            //send mail
+            boolean isSendMailSuccess = emailLogLogic.sendMail(CommonConst.TYPE_SEND_MAIL_REGISTER,
+                    EmailUtils.getContentMailRegister(link), account.getEmail());
+
             if (isSendMailSuccess) {
                 EmailLog emailLog = EmailLog.builder().
                         to(account.getEmail()).
-                        subject("Register").
-                        content(EmailUtils.getMailContentRegister(tokenEncrypt, URLWeb, accountIdEncrypt)).
+                        subject("REGISTER").
+                        content(EmailUtils.getContentMailRegister(link)).
                         build();
+                //insert to db emailLog
                 int emailLogId = emailLogLogic.insertToDb(emailLog);
+                
                 VerifyRequest verifyRequest = VerifyRequest.builder().
-                        requestContent(tokenEncrypt).
-                        accountId(accountId).
+                        requestContent(token).
+                        isVerify(false).
+                        accountId(id).
                         emailLogId(emailLogId).
                         createAt(CommonUtils.getCurrentTimestamp()).
                         expired(CommonUtils.getTimestampExpired()).
-                        isVerify(false).
                         build();
+                        
                 verifyRequestLogic.insertToDb(verifyRequest);
-                response.sendRedirect("home");
+                
+                request.setAttribute("mess", "XAC THUC THANH CONG");
+                request.getRequestDispatcher("view/common/thanhcong.jsp").forward(request, response);
             }
-            //catch error of username or email 
+            //username or email not exist
         } catch (IllegalArgumentException e) {
-            request.setAttribute(CommonConst.ATTRIBUTE_ERROR, e.getMessage());
-            //go to register page
+            //set error
+            request.setAttribute("error", e.getMessage());
+            //redirect register
             request.getRequestDispatcher("view/common/authen/register.jsp").forward(request, response);
-        } catch (Exception ex) {
-            ex.printStackTrace();
-        }
+        } catch (Exception e) {
 
+        }
     }
+
+    /**
+     * Returns a short description of the servlet.
+     *
+     * @return a String containing servlet description
+     */
+    @Override
+    public String getServletInfo() {
+        return "Short description";
+    }// </editor-fold>
+
 }

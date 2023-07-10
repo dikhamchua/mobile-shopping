@@ -15,7 +15,7 @@
     <body>
         <section id="navbar">
             <nav class="navbar navbar-expand-lg navbar-light bg-light">
-                <a href="#" class="navbar-brand">Start bootstrap</a>
+                <a href="${pageContext.request.contextPath}/home" class="navbar-brand">Book Store</a>
                 <ul class="navbar-nav">
                     <li class="nav-item">
                         <a href="" class="nav-link">Home</a>
@@ -33,9 +33,11 @@
                            name="keyword">
                     <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Search</button>
                 </form>
-                <button class="btn btn-outline-dark mr-lg-3">
-                    <i class="fa-solid fa-cart-shopping"></i>&nbsp;&nbsp;&nbsp;Cart
-                </button>
+                <a href="${pageContext.request.contextPath}/cart">
+                    <button class="btn btn-outline-dark mr-lg-3">
+                        <i class="fa-solid fa-cart-shopping"></i>&nbsp;&nbsp;&nbsp;Cart
+                    </button>
+                </a>
 
                 <c:if test="${sessionScope.account == null}">
                     <a href="${pageContext.request.contextPath}/login">
@@ -50,6 +52,12 @@
                             Logout
                         </button>
                     </a>
+                    <a href="${pageContext.request.contextPath}/dashboard" class="ml-3">
+                        <button class="btn btn-outline-success">
+                            ${sessionScope.account.username}
+                        </button>
+                    </a>
+
                 </c:if>
             </nav>
         </section>

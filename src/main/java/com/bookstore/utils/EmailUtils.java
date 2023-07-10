@@ -13,14 +13,10 @@ import javax.mail.Transport;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
 
-/**
- *
- * @author ADMIN
- */
 public class EmailUtils {
 
     public static final String username = "vinhpkhe153482@fpt.edu.vn";
-    public static final String password = "iurznzqbznzxrfxn";
+    public static final String password = "oigqswyzoyywjwss";
 
     public static boolean sendMail(String to, String subject, String content) {
         Properties properies = new Properties();
@@ -53,6 +49,7 @@ public class EmailUtils {
             message.setRecipients(Message.RecipientType.TO,
                     InternetAddress.parse(to));
             message.setSubject(subject);
+
             message.setContent(content, "text/html");
 
             Transport.send(message);
@@ -63,13 +60,53 @@ public class EmailUtils {
 
         return true;
     }
-    
-    public static String getMailContentRegister(String tokenEncrypt, String URLWeb, String accountIdEncrypt) {
-        return URLWeb + "/verify?token=" + tokenEncrypt + "&account=" + accountIdEncrypt;
+
+    public static String getContentMailRegister(String link) {
+        String content = "<!DOCTYPE html>\n"
+                + "<html lang=\"en\">\n"
+                + "<head>\n"
+                + "    <meta charset=\"UTF-8\">\n"
+                + "    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\n"
+                + "    <title>Reset Password</title>\n"
+                + "    <!-- CSS Bootstrap 4.3 -->\n"
+                + "    <link rel=\"stylesheet\" href=\"https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css\">\n"
+                + "</head>\n"
+                + "<body>\n"
+                + "    <h1>\n"
+                + link
+                + "    </h1>\n"
+                + "    <!-- JavaScript Bootstrap 4.3 and jQuery (required for this example) -->\n"
+                + "    <script src=\"https://code.jquery.com/jquery-3.3.1.slim.min.js\"></script>\n"
+                + "    <script src=\"https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js\"></script>\n"
+                + "</body>\n"
+                + "</html>";
+        return content;
     }
 
     public static void main(String[] args) {
-        EmailUtils.sendMail("vinhpham2761@gmail.com", "test gui mail", "hello");
+        EmailUtils emailUtils = new EmailUtils();
+        String content = "<!DOCTYPE html>\n"
+                + "<html lang=\"en\">\n"
+                + "<head>\n"
+                + "    <meta charset=\"UTF-8\">\n"
+                + "    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\n"
+                + "    <title>Reset Password</title>\n"
+                + "    <!-- CSS Bootstrap 4.3 -->\n"
+                + "    <link rel=\"stylesheet\" href=\"https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css\">\n"
+                + "</head>\n"
+                + "<body>\n"
+                + "    <h1>\n"
+                + "        hello \n"
+                + "    </h1>\n"
+                + "\n"
+                + "    <h2>hellooooooooooooo</h2>\n"
+                + "\n"
+                + "    <!-- JavaScript Bootstrap 4.3 and jQuery (required for this example) -->\n"
+                + "    <script src=\"https://code.jquery.com/jquery-3.3.1.slim.min.js\"></script>\n"
+                + "    <script src=\"https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js\"></script>\n"
+                + "</body>\n"
+                + "</html>";
+        emailUtils.sendMail("vinhpham2761@gmail.com", "hello, mot ngay that dep tuoi", content);
     }
 
 }

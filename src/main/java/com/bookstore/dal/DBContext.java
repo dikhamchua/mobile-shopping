@@ -148,7 +148,7 @@ public class DBContext<T> {
         } catch (ClassNotFoundException ex) {
             Logger.getLogger(DBContext.class.getName()).log(Level.SEVERE, null, ex);
         }
-        int id = -1;
+        int id = 0;
         try {
             connection.setAutoCommit(false);
             statement = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);

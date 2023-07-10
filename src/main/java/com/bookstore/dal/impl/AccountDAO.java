@@ -11,9 +11,6 @@ import com.debitbook.model.Parameter;
 import dal.IGenericDAO;
 import java.sql.Types;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import com.bookstore.utils.TrippleDesEncDec;
 
 /**
  *
@@ -55,6 +52,7 @@ public class AccountDAO extends DBContext<Account> implements IGenericDAO<Accoun
                 new Parameter(t.isVerify(), Types.BOOLEAN),
                 new Parameter(t.getRoleId(), Types.INTEGER)
         );
+
     }
 
     @Override
@@ -68,43 +66,34 @@ public class AccountDAO extends DBContext<Account> implements IGenericDAO<Accoun
     }
 
     public Account findByUsernamePassword(Account account) {
-        TrippleDesEncDec trippleDesEncDec = null;
-        try {
-            trippleDesEncDec = new TrippleDesEncDec();
-            String passwordEncrypt = trippleDesEncDec.encrypt(account.getPassword());
-            String sql = "select * from account\n"
-                    + "where username = ? and password = ?";
-            List<Account> list = query(sql, new AccountMapper(),
-                    new Parameter(account.getUsername(), Types.VARCHAR),
-                    new Parameter(passwordEncrypt, Types.VARCHAR)
-            );
-            return list.isEmpty() ? null : list.get(0);
-        } catch (Exception ex) {
-            Logger.getLogger(AccountDAO.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        return null;
+        String sql = "select * from account\n"
+                + "where username = ? and password = ? and isVerify = 1";
+        List<Account> list = query(sql, new AccountMapper(),
+                new Parameter(account.getUsername(), Types.VARCHAR),
+                new Parameter(account.getPassword(), Types.VARCHAR)
+        );
+        return list.isEmpty() ? null : list.get(0);
     }
 
-    public Account findByUsername(Account objAccount) {
+    public Account findByUsername(Account t) {
         String sql = "select * from account where username = ?";
-        List<Account> list = query(sql, new AccountMapper(),
-                new Parameter(objAccount.getUsername(), Types.NVARCHAR));
+        List<Account> list = query(sql, new AccountMapper(), new Parameter(t.getUsername(), Types.NVARCHAR));
         return list.isEmpty() ? null : list.get(0);
     }
 
-    public Account findByEmail(Account objAccount) {
+    public Account findByEmail(Account t) {
         String sql = "select * from account where email = ?";
-        List<Account> list = query(sql, new AccountMapper(),
-                new Parameter(objAccount.getEmail(), Types.NVARCHAR));
+        List<Account> list = query(sql, new AccountMapper(), new Parameter(t.getEmail(), Types.NVARCHAR));
         return list.isEmpty() ? null : list.get(0);
     }
 
-    public void updateIsVerify(String accountId) {
-        String sql = "UPDATE [Account]\n"
-                + "   SET "
-                + "      [isVerify] = 1"
+    public void updateIsVerify(int accountId) {
+        String sql = "UPDATE [dbo].[Account]\n"
+                + "   SET \n"
+                + "      [isVerify] = 1\n"
+                + "      \n"
                 + " WHERE id = ?";
-        update(sql, new Parameter(accountId, Types.NVARCHAR));
+        update(sql, new Parameter(accountId, Types.INTEGER));
     }
 
 }

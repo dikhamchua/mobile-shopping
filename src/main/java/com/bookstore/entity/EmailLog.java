@@ -4,6 +4,8 @@
  */
 package com.bookstore.entity;
 
+import com.bookstore.constant.CommonConst;
+import com.bookstore.utils.EmailUtils;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;

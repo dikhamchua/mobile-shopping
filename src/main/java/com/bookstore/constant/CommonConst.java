@@ -31,11 +31,7 @@ public class CommonConst {
     
     public static final String SESSION_ACCOUNT = "account";
     
-    public static final int ID_INSERT_FAIL = -1;
-    
-    public static final String ATTRIBUTE_ERROR = "error";
-    
-    public static final String TYPE_SEND_MAIL_VERIFY_REGISTER = "REGISTER";
+    public static final String TYPE_SEND_MAIL_REGISTER = "register";
     
     public static final int EXPIRED_HOUR = 24;
 }

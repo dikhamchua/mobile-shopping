@@ -4,14 +4,9 @@
  */
 package com.bookstore.controller.authen;
 
-import com.bookstore.biz.impl.AccountLogic;
 import com.bookstore.biz.impl.VerifyRequestLogic;
-import com.bookstore.entity.VerifyRequest;
-import com.bookstore.utils.TrippleDesEncDec;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -19,7 +14,7 @@ import javax.servlet.http.HttpServletResponse;
 
 /**
  *
- * @author ADMIN
+ * @author PHAM KHAC VINH
  */
 public class VerifyServlet extends HttpServlet {
 
@@ -27,31 +22,19 @@ public class VerifyServlet extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         VerifyRequestLogic verifyRequestLogic = new VerifyRequestLogic();
-        AccountLogic accountLogic = new AccountLogic();
+
+        //get token
+        String token = request.getParameter("token");
+
         try {
-            //get token
-            String tokenEncrypt = request.getParameter("token");
-            System.out.println(tokenEncrypt);
-            //get accountId 
-            String accountIdEncrypt = request.getParameter("account");
-            //decrypt accountId
-            String accountIdDecrypt = TrippleDesEncDec.decrypt(accountIdEncrypt);
-            //check token and accountId exist in verifyRequest's table
-            VerifyRequest verifyRequest = verifyRequestLogic.findByTokenAndUsername(tokenEncrypt, accountIdDecrypt);
-            //exist in table
-            if (verifyRequest != null) {
-                //update isVerify account to true
-                accountLogic.updateIsVerify(accountIdDecrypt);
-                //go to verifySuccessful.jsp
-                response.sendRedirect("home");
-                //not exist
-            } else {
-                //go to 404.jsp
-                request.getRequestDispatcher("view/error/404.jsp").forward(request, response);
-            }
-        } catch (Exception ex) {
-            ex.printStackTrace();
-            request.getRequestDispatcher("view/error/404.jsp").forward(request, response);
+            verifyRequestLogic.verify(token);
+
+        } catch (IllegalArgumentException e) {
+            request.setAttribute("error", e.getMessage());
+            request.getRequestDispatcher("view/common/error/404.jsp").forward(request, response);
+        } catch (Exception e) {
+            request.setAttribute("error", e.getMessage());
+            request.getRequestDispatcher("view/common/error/404.jsp").forward(request, response);
         }
 
     }
@@ -59,16 +42,38 @@ public class VerifyServlet extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
+        processRequest(request, response);
     }
 
-    /**
-     * Returns a short description of the servlet.
-     *
-     * @return a String containing servlet description
-     */
     @Override
     public String getServletInfo() {
         return "Short description";
     }// </editor-fold>
+
+    /**
+     * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
+     * methods.
+     *
+     * @param request servlet request
+     * @param response servlet response
+     * @throws ServletException if a servlet-specific error occurs
+     * @throws IOException if an I/O error occurs
+     */
+    protected void processRequest(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+        response.setContentType("text/html;charset=UTF-8");
+        try ( PrintWriter out = response.getWriter()) {
+            /* TODO output your page here. You may use following sample code. */
+            out.println("<!DOCTYPE html>");
+            out.println("<html>");
+            out.println("<head>");
+            out.println("<title>Servlet VerifyServlet</title>");
+            out.println("</head>");
+            out.println("<body>");
+            out.println("<h1>Servlet VerifyServlet at " + request.getContextPath() + "</h1>");
+            out.println("</body>");
+            out.println("</html>");
+        }
+    }
 
 }

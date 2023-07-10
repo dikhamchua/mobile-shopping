@@ -15,7 +15,7 @@ import java.util.List;
  *
  * @author ADMIN
  */
-public class EmailLogDAO extends DBContext<EmailLog> implements IGenericDAO<EmailLog> {
+public class EmailLogDAO extends DBContext<EmailLog> implements IGenericDAO<EmailLog>{
 
     @Override
     public List<EmailLog> findAll() {
@@ -29,7 +29,7 @@ public class EmailLogDAO extends DBContext<EmailLog> implements IGenericDAO<Emai
 
     @Override
     public int insertToDb(EmailLog t) {
-        String sql = "INSERT INTO [EmailLog]\n"
+         String sql = "INSERT INTO [EmailLog]\n"
                 + "           ([to]\n"
                 + "           ,[subject]\n"
                 + "           ,[content])\n"
@@ -42,6 +42,7 @@ public class EmailLogDAO extends DBContext<EmailLog> implements IGenericDAO<Emai
                 new Parameter(t.getSubject(), Types.NVARCHAR),
                 new Parameter(t.getContent(), Types.NVARCHAR)
                 );
+
     }
 
     @Override
@@ -53,5 +54,5 @@ public class EmailLogDAO extends DBContext<EmailLog> implements IGenericDAO<Emai
     public void delete(EmailLog t) {
         throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
     }
-
+    
 }

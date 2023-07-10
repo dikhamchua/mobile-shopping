@@ -41,9 +41,6 @@ public class BookLogic implements IGenericLogic<Book>{
         }else {
             try {
                 currentPage = Integer.parseInt(request.getParameter("page"));
-                if (currentPage <= 0) {
-                    currentPage = 1;
-                }
                 
             } catch (NumberFormatException e) {
                 currentPage = 1;
@@ -96,6 +93,10 @@ public class BookLogic implements IGenericLogic<Book>{
     @Override
     public void delete(Book t) {
         dao.delete(t);
+    }
+
+    public Book findBooksById(int id) {
+        return dao.findOneById(id);
     }
     
 }

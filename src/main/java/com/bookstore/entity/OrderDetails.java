@@ -23,12 +23,7 @@ import lombok.ToString;
 @NoArgsConstructor
 @Getter
 @Setter
-public class Account {
-    private int id;
-    private String username;
-    private String password;
-    private String email;
-    private String address;
-    private boolean isVerify;
-    private int roleId;
+public class OrderDetails {
+    private Book book;
+    private int quantity;
 }

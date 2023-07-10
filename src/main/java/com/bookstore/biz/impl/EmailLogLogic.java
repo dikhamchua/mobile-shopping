@@ -7,7 +7,6 @@ package com.bookstore.biz.impl;
 import com.bookstore.biz.IGenericLogic;
 import com.bookstore.constant.CommonConst;
 import com.bookstore.dal.impl.EmailLogDAO;
-import com.bookstore.entity.Account;
 import com.bookstore.entity.EmailLog;
 import com.bookstore.utils.EmailUtils;
 import java.util.List;
@@ -16,9 +15,9 @@ import java.util.List;
  *
  * @author ADMIN
  */
-public class EmailLogLogic implements IGenericLogic<EmailLog> {
+public class EmailLogLogic implements IGenericLogic<EmailLog>{
     EmailLogDAO dao;
-
+    
     public EmailLogLogic() {
         dao = new EmailLogDAO();
     }
@@ -43,20 +42,13 @@ public class EmailLogLogic implements IGenericLogic<EmailLog> {
     public void delete(EmailLog t) {
         throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
     }
-
-    public boolean sendMail(Account account, String TYPE_SEND_MAIL,
-                                String content) {
-        //get full URL
-        switch (TYPE_SEND_MAIL) {
-            case CommonConst.TYPE_SEND_MAIL_VERIFY_REGISTER:
-                 EmailUtils.sendMail(account.getEmail(), "Register",
-                         content);
-                return true;
-            
+    
+    public boolean sendMail(String typeSendMail, String content, String emailTo) {
+        switch (typeSendMail) {
+            case CommonConst.TYPE_SEND_MAIL_REGISTER:
+                return EmailUtils.sendMail(emailTo, "REGISTER", content);
         }
         return false;
     }
     
-    
-
 }

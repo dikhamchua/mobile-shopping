@@ -7,11 +7,12 @@ package com.bookstore.biz.impl;
 import com.bookstore.biz.IGenericLogic;
 import com.bookstore.constant.CommonConst;
 import com.bookstore.dal.impl.AccountDAO;
-import com.bookstore.dal.impl.EmailLogDAO;
-import com.bookstore.dal.impl.VerifyRequestDAO;
 import com.bookstore.entity.Account;
-import com.bookstore.utils.TrippleDesEncDec;
+import com.bookstore.utils.TrippleDesASCUtils;
+import com.debitbook.model.Parameter;
 import java.io.UnsupportedEncodingException;
+import java.security.InvalidKeyException;
+import java.sql.Types;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -23,13 +24,9 @@ import java.util.logging.Logger;
 public class AccountLogic implements IGenericLogic<Account> {
 
     AccountDAO dao;
-    EmailLogDAO emailLogDAO;
-    VerifyRequestDAO verifyRequestDAO;
 
     public AccountLogic() {
         dao = new AccountDAO();
-        emailLogDAO = new EmailLogDAO();
-        verifyRequestDAO = new VerifyRequestDAO();
     }
 
     @Override
@@ -38,27 +35,26 @@ public class AccountLogic implements IGenericLogic<Account> {
     }
 
     @Override
-    public int insertToDb(Account objAccount) {
-
-        //check account in DB
-        //check username
-        if (dao.findByUsername(objAccount) != null) {
+    public int insertToDb(Account t) {
+        //check username exist
+        if (dao.findByUsername(t) != null) {
             throw new IllegalArgumentException("Username exist !!");
         }
-        //check email
-        if (dao.findByEmail(objAccount) != null) {
+        //check email exist
+        if (dao.findByEmail(t) != null) {
             throw new IllegalArgumentException("Email exist !!");
         }
-
         try {
-            //bypass password
-            objAccount.setPassword(TrippleDesEncDec.encrypt(objAccount.getPassword()));
-        } catch (UnsupportedEncodingException ex) {
-            Logger.getLogger(AccountLogic.class.getName()).log(Level.SEVERE, null, ex);
+            //insert
+            t.setPassword(TrippleDesASCUtils.encrypt(t.getPassword()));
+        } catch (Exception ex) {
+            try {
+                throw new Exception();
+            } catch (Exception ex1) {
+                Logger.getLogger(AccountLogic.class.getName()).log(Level.SEVERE, null, ex1);
+            }
         }
-
-        //insert to db
-        return dao.insertToDb(objAccount);
+        return dao.insertToDb(t);
     }
 
     @Override
@@ -73,6 +69,7 @@ public class AccountLogic implements IGenericLogic<Account> {
 
     public Account findAccount(Account account, String optionFind) {
         Account accountFound = null;
+        account.setPassword(TrippleDesASCUtils.encrypt(account.getPassword()));
         switch (optionFind) {
             case CommonConst.FIND_ACCOUNT_BY_EMAIL:
 
@@ -85,8 +82,18 @@ public class AccountLogic implements IGenericLogic<Account> {
         return accountFound;
     }
 
-    public void updateIsVerify(String accountId) {
+    void updateIsVerify(int accountId) {
         dao.updateIsVerify(accountId);
+    }
+
+    public void updateAddress(String username, String address) {
+        String sql = "UPDATE [dbo].[Account]\n"
+                + "   SET \n"
+                + "      [address] = ?\n"
+                + "      \n"
+                + " WHERE username = ?";
+        dao.update(sql, new Parameter(address, Types.NVARCHAR),
+        new Parameter(username, Types.NVARCHAR));
     }
 
 }

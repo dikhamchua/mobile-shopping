@@ -65,14 +65,20 @@ public class VerifyRequestDAO extends DBContext<VerifyRequest> implements IGener
         throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
     }
 
-    public VerifyRequest findByTokenAndUsername(String tokenDecrypt, String accountIdDecrypt) {
-        String sql = "select * from VerifyRequest\n"
-                + "where requestContent = ? and accountId = ?";
+    public VerifyRequest findByRequestContent(String token) {
+        String sql = "select * from VerifyRequest where requestContent = ?";
         List<VerifyRequest> list = query(sql, new VerifyRequestMapper(),
-                new Parameter(tokenDecrypt, Types.NVARCHAR),
-                new Parameter(accountIdDecrypt, Types.NVARCHAR)
-        );
+                new Parameter(token, Types.NVARCHAR));
         return list.isEmpty() ? null : list.get(0);
+    }
+
+    public void updateIsVerify(int id) {
+        String sql = "UPDATE [dbo].[VerifyRequest]\n"
+                + "   SET \n"
+                + "      [isVerify] = 1\n"
+                + "      \n"
+                + " WHERE id = ?";
+        update(sql, new Parameter(id, Types.INTEGER));
     }
 
 }

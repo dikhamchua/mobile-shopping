@@ -28,7 +28,9 @@ public class BookDAO extends DBContext<Book> implements IGenericDAO<Book> {
 
     @Override
     public Book findOneById(int id) {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+        String sql = "select * from book where id = ?";
+        List<Book> list = query(sql, new BookMapper(), new Parameter(id, Types.INTEGER));
+        return list.isEmpty() ? null : list.get(0);
     }
 
     @Override

@@ -43,8 +43,11 @@ public class LoginServlet extends HttpServlet {
                 password(password).
                 build();
 
-        // check account by username and password exist
-        account = accountLogic.findAccount(account, CommonConst.FIND_ACCOUNT_BY_USERNAME_PASSWORD);
+        // check account by username and password exist\
+        try {
+            account = accountLogic.findAccount(account, CommonConst.FIND_ACCOUNT_BY_USERNAME_PASSWORD);
+        } catch (Exception e) {
+        }
 
         if (account != null) {
             session.setAttribute(CommonConst.SESSION_ACCOUNT, account);
